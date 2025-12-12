@@ -72,5 +72,29 @@ def update_post(id):
     return jsonify(post_to_update), 200
 
 
+@app.route('/api/posts/search')
+def filter_posts():
+    # Query parameters
+    title_snippet = request.args.get('title')
+    content_snippet = request.args.get('content')
+
+    matched_posts_list = []
+
+    for post in POSTS:
+        title_match = True
+        content_match = True
+
+        if title_snippet:
+            title_match = title_snippet.lower().strip() in post['title'].lower().strip()
+
+        if content_snippet:
+            content_match = content_snippet.lower().strip() in post['content'].lower().strip()
+
+        if title_match and content_match:
+            matched_posts_list.append(post)
+
+    return jsonify(matched_posts_list)
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
