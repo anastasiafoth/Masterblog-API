@@ -30,7 +30,35 @@ def get_post_posts():
         return jsonify(new_post), 201
 
     # Handles GET request
-    return jsonify(POSTS)
+    sort = request.args.get('sort')
+    direction = request.args.get('direction', 'asc')
+    allowed_sort_fields = ['title', 'content']
+    allowed_directions = ['asc', 'desc']
+
+    # Returns list of posts without sorting
+    if sort is None:
+        return jsonify(POSTS)
+
+
+    if sort in allowed_sort_fields and direction in allowed_directions:
+        if sort == 'title' and direction == 'asc':
+            sorted_dict = sorted(POSTS, key=lambda post: post['title'])
+        if sort == 'title' and direction == 'desc':
+            sorted_dict = sorted(POSTS, key=lambda post: post['title'], reverse=True)
+
+        if sort == 'content' and direction == 'asc':
+            sorted_dict = sorted(POSTS, key=lambda post: post['content'])
+        if sort == 'content' and direction == 'desc':
+            sorted_dict = sorted(POSTS, key=lambda post: post['content'], reverse=True)
+        return jsonify(sorted_dict)
+    else:
+        return jsonify({
+            "error": "Invalid sort field or direction",
+            "allowed_sort_fields": allowed_sort_fields,
+            "received_sort": sort,
+            "allowed_directions": allowed_directions,
+            "received_direction": direction
+        }), 400
 
 
 def find_post_by_id(id):
