@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "First post",
+    "content": "This is the first post."
+  },
+  {
+    "id": 2,
+    "title": "Second post",
+    "content": "This is the second post."
+  },
+  {
+    "id": 3,
+    "title": "Third post",
+    "content": "This is the third post."
+  },
+  {
+    "id": 4,
+    "title": "Fourth post",
+    "content": "Another example post with some content."
+  },
+  {
+    "id": 5,
+    "title": "Flask API",
+    "content": "Building a simple REST API with Flask."
+  },
+  {
+    "id": 6,
+    "title": "JSON Storage",
+    "content": "Using a JSON file to store data temporarily."
+  },
+  {
+    "id": 7,
+    "title": "Sorting Data",
+    "content": "Sorting posts by title or content."
+  },
+  {
+    "id": 8,
+    "title": "HTTP Methods",
+    "content": "Understanding GET and POST requests."
+  },
+  {
+    "id": 9,
+    "title": "Validation",
+    "content": "Always validate incoming request data."
+  },
+  {
+    "id": 10,
+    "title": "Error Handling",
+    "content": "Returning proper error messages in APIs."
+  },
+  {
+    "id": 11,
+    "title": "REST Basics",
+    "content": "REST APIs follow clear and simple rules."
+  },
+  {
+    "id": 12,
+    "title": "Next Steps",
+    "content": "Move from JSON files to a real database."
+  }
+]

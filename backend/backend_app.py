@@ -1,17 +1,23 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+import json
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
-POSTS = [
-    {"id": 1, "title": "First post", "content": "This is the first post."},
-    {"id": 2, "title": "Second post", "content": "This is the second post."},
-]
+def read_json():
+    with open("data/posts.json", "r") as file:
+        posts = json.load(file)
+    return posts
 
+def write_json(posts):
+    with open("data/posts.json", "w") as file:
+        json.dump(posts, file, indent=2)
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def get_post_posts():
+    posts = read_json()
 
     if request.method == 'POST':
         new_post = request.get_json()
@@ -22,11 +28,12 @@ def get_post_posts():
         if not new_post['content']:
             return jsonify({"error": "Missing required field", "missing": "content"}), 400
         # Generates a new id for new post
-        new_id = max(post['id'] for post in POSTS) + 1
+        new_id = max(post['id'] for post in posts) + 1
         new_post['id'] = new_id
 
         # Adds new post to POSTS
-        POSTS.append(new_post)
+        posts.append(new_post)
+        write_json(posts)
         return jsonify(new_post), 201
 
     # Handles GET request
@@ -37,19 +44,19 @@ def get_post_posts():
 
     # Returns list of posts without sorting
     if sort is None:
-        return jsonify(POSTS)
+        return jsonify(posts)
 
 
     if sort in allowed_sort_fields and direction in allowed_directions:
         if sort == 'title' and direction == 'asc':
-            sorted_dict = sorted(POSTS, key=lambda post: post['title'])
+            sorted_dict = sorted(posts, key=lambda post: post['title'])
         if sort == 'title' and direction == 'desc':
-            sorted_dict = sorted(POSTS, key=lambda post: post['title'], reverse=True)
+            sorted_dict = sorted(posts, key=lambda post: post['title'], reverse=True)
 
         if sort == 'content' and direction == 'asc':
-            sorted_dict = sorted(POSTS, key=lambda post: post['content'])
+            sorted_dict = sorted(posts, key=lambda post: post['content'])
         if sort == 'content' and direction == 'desc':
-            sorted_dict = sorted(POSTS, key=lambda post: post['content'], reverse=True)
+            sorted_dict = sorted(posts, key=lambda post: post['content'], reverse=True)
         return jsonify(sorted_dict)
     else:
         return jsonify({
@@ -64,7 +71,8 @@ def get_post_posts():
 def find_post_by_id(id):
     """ Find the book with the id `book_id`.
       If there is no book with this id, return None. """
-    for post in POSTS:
+    posts = read_json()
+    for post in posts:
         if id == post['id']:
             return post
     return None
@@ -73,13 +81,15 @@ def find_post_by_id(id):
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
 def delete_post(id):
     """ Deletes a post based on given ID """
+    posts = read_json()
     post_to_delete = find_post_by_id(id)
     # If post is not found, return error
     if post_to_delete is None:
         return jsonify({"error": "No post found under this ID"}), 404
 
     # Remove post from the list
-    POSTS.remove(post_to_delete)
+    posts.remove(post_to_delete)
+    write_json(posts)
 
     return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
 
@@ -87,6 +97,7 @@ def delete_post(id):
 @app.route('/api/posts/<int:id>', methods=['PUT'])
 def update_post(id):
     """ Updates a post based on given ID """
+    posts = read_json()
     post_to_update = find_post_by_id(id)
     # If post is not found, return error
     if post_to_update is None:
@@ -96,7 +107,7 @@ def update_post(id):
     new_data = request.get_json()
     post_to_update.update(new_data)
 
-
+    write_json(posts)
     return jsonify(post_to_update), 200
 
 
@@ -106,9 +117,10 @@ def filter_posts():
     title_snippet = request.args.get('title')
     content_snippet = request.args.get('content')
 
+    posts = read_json()
     matched_posts_list = []
 
-    for post in POSTS:
+    for post in posts:
         title_match = True
         content_match = True
 
@@ -122,6 +134,20 @@ def filter_posts():
             matched_posts_list.append(post)
 
     return jsonify(matched_posts_list)
+
+
+# API Documentation
+SWAGGER_URL="/api/docs"  # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
+API_URL="/static/masterblog.json" # (2) ensure you create this dir and file
+
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': 'Masterblog API' # (3) You can change this if you like
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 
 if __name__ == '__main__':
