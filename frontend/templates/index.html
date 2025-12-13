@@ -9,6 +9,22 @@
 </head>
 <body>
     <div class="container">
+        <select id="sort-field">
+      <option value="">-- Sort by --</option>
+      <option value="title">Title</option>
+      <option value="content">Content</option>
+    </select>
+
+    <select id="sort-direction">
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+
+    <button onclick="applySorting()">Sort</button>
+
+    <input type="text" id="search-title" placeholder="Search title">
+    <input type="text" id="search-content" placeholder="Search content">
+    <button onclick="searchPosts()">Search</button>
         <h1>📚 Blog Posts</h1>
         <div class="input-field">
             <input type="text" id="api-base-url" placeholder="Enter API Base URL" value="http://127.0.0.1:5002/api">

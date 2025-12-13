@@ -30,11 +30,6 @@
     "content": "Using a JSON file to store data temporarily."
   },
   {
-    "id": 7,
-    "title": "Sorting Data",
-    "content": "Sorting posts by title or content."
-  },
-  {
     "id": 8,
     "title": "HTTP Methods",
     "content": "Understanding GET and POST requests."
@@ -58,5 +53,10 @@
     "id": 12,
     "title": "Next Steps",
     "content": "Move from JSON files to a real database."
+  },
+  {
+    "title": "Hello",
+    "content": "Hello World",
+    "id": 13
   }
 ]

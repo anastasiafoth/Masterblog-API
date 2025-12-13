@@ -10,13 +10,19 @@ window.onload = function() {
 }
 
 // Function to fetch all the posts from the API and display them on the page
-function loadPosts() {
+function loadPosts(sort = null, direction = 'asc') {
     // Retrieve the base URL from the input field and save it to local storage
     var baseUrl = document.getElementById('api-base-url').value;
     localStorage.setItem('apiBaseUrl', baseUrl);
 
+    let url = baseUrl + '/posts';
+
+    if (sort) {
+        url += `?sort=${sort}&direction=${direction}`;
+    }
+
     // Use the Fetch API to send a GET request to the /posts endpoint
-    fetch(baseUrl + '/posts')
+    fetch(url)
         .then(response => response.json())  // Parse the JSON data from the response
         .then(data => {  // Once the data is ready, we can use it
             // Clear out the post container first
@@ -27,14 +33,55 @@ function loadPosts() {
             data.forEach(post => {
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
-                postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>`;
+                postDiv.innerHTML = `
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+                    <button onclick="deletePost(${post.id})">Delete</button>`;
                 postContainer.appendChild(postDiv);
             });
         })
         .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }
 
+function searchPosts() {
+    var baseUrl = document.getElementById('api-base-url').value;
+    var title = document.getElementById('search-title').value;
+    var content = document.getElementById('search-content').value;
+
+    let url = baseUrl + '/posts/search?';
+
+    if (title) url += `title=${encodeURIComponent(title)}&`;
+    if (content) url += `content=${encodeURIComponent(content)}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const postContainer = document.getElementById('post-container');
+            postContainer.innerHTML = '';
+
+            data.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.innerHTML = `
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+                `;
+                postContainer.appendChild(postDiv);
+            });
+        });
+}
+
+function applySorting() {
+    const sortField = document.getElementById('sort-field').value;
+    const direction = document.getElementById('sort-direction').value;
+
+    if (!sortField) {
+        loadPosts(); // fallback: normal laden
+        return;
+    }
+
+    loadPosts(sortField, direction);
+}
 // Function to send a POST request to the API to add a new post
 function addPost() {
     // Retrieve the values from the input fields
