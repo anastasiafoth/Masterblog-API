@@ -1,2 +1,0 @@
-# Masterblog-API
-Blog website
